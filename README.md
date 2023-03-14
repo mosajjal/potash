@@ -4,6 +4,13 @@ Potash Malware Search Engine is a command-line tool that utilizes TLSH and vptre
 
 The tool can run in two modes: `interactive` and `once`. In the interactive mode, the tool prompts the user to enter the TLSH but doesn't exit after printing the 10 closes SHA256 hashes. In the `once` mode, the tool takes the file path or TLSH hash as a command-line argument and returns the 10 closest malware SHA256 hashes.
 
+![potash](img/potash.png)
+
+above example hashes:
+- 1: sha256: 253f5d458d58c68d652d8034d533b958226b72ba3f9e120acb2b7a8808aa052e
+- 2: sha256: 75ef7ade030933015285b020e2dd24f3459520a444e89681934dc1eca7de4f7b
+
+
 ## Requirements
 - Go 1.20 or higher
 

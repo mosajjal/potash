@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	panic(cmd.Execute())
+	_ = cmd.Execute()
 }
