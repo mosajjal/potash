@@ -16,6 +16,7 @@ var (
 	gobPath       string
 	forceGenerate bool
 	hash          string
+	outputFormat  string // format of the output. options: JSON, CSV, Table, YAML
 	radius        uint16
 
 	rootCmd = &cobra.Command{
@@ -48,7 +49,7 @@ var (
 		Short: "run once",
 		Long:  `compare a hash with the tree and exit`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := potash.RunOnce(gobPath, hash, radius); err != nil {
+			if err := potash.RunOnce(gobPath, hash, radius, outputFormat); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -60,7 +61,7 @@ var (
 		Short: "run interactive",
 		Long:  `compare hashes from input/stdin with the tree and exit`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := potash.RunInteractive(gobPath, radius); err != nil {
+			if err := potash.RunInteractive(gobPath, radius, outputFormat); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
@@ -75,6 +76,7 @@ func init() {
 	// make tlsh required
 	runOnceCmd.MarkFlagRequired("tlsh")
 	runOnceCmd.Flags().Uint16VarP(&radius, "count", "c", 10, "number of output neighbours")
+	runOnceCmd.Flags().StringVarP(&outputFormat, "format", "f", "json", "output format. options: json, table, yaml")
 
 	generateCmd.Flags().StringVarP(&csvPath, "csv", "c", "./malware.csv", "path to the abuse.ch CSV file")
 	// make csv required
@@ -84,6 +86,7 @@ func init() {
 
 	runInteractiveCmd.Flags().StringVarP(&gobPath, "treegob", "t", "./tree.gob", "path to the tree gob file")
 	runInteractiveCmd.Flags().Uint16VarP(&radius, "count", "c", 10, "number of output neighbours")
+	runInteractiveCmd.Flags().StringVarP(&outputFormat, "format", "f", "json", "output format. options: json, csv, table, yaml")
 
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.AddCommand(runOnceCmd)

@@ -6,16 +6,20 @@ import (
 	"compress/gzip"
 	"encoding/csv"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
 	"github.com/glaslos/tlsh"
+	emerald "github.com/mosajjal/emerald/dns"
 	"github.com/mosajjal/potash/pkg/vptree"
 	"github.com/rs/zerolog/log"
+	"gopkg.in/yaml.v3"
 )
 
 // Malware is the representation of each sample as per the abuse.ch CSV file
@@ -35,6 +39,7 @@ type Malware struct {
 	ImpHash       string
 	SSDeep        string
 	TLSHRaw       string
+	DistanceValue float64 // This is purely used to fill out the table/JSON when printing a Malware sample against a TLSH
 }
 
 // GobEncode provides a standard GOB encoding
@@ -171,6 +176,24 @@ func (m *Malware) GobDecode(data []byte) error {
 		return err
 	}
 	return nil
+}
+
+// Marshal provides a way to show a Malware sample in different formats
+func (m Malware) Marshal(kind string) ([]byte, error) {
+	switch kind {
+	case "json":
+		return json.Marshal(m)
+	case "yaml":
+		return yaml.Marshal(m)
+	case "table":
+		var b bytes.Buffer
+		_ = io.Writer(&b)
+		emerald.PrettyPrint(m, &b)
+		return ioutil.ReadAll(&b)
+	// default to JSON
+	default:
+		return json.Marshal(m)
+	}
 }
 
 // Distance is a required function for Malware struct to make it a vptree interface
@@ -320,7 +343,7 @@ func loadGOB(gobPath string) (*vptree.VPTree, error) {
 }
 
 // RunOnce reads the GOB path for a trie or creates a new one
-func RunOnce(gobPath string, hashInput string, radius uint16) error {
+func RunOnce(gobPath string, hashInput string, radius uint16, outFormat string) error {
 	tree, err := loadGOB(gobPath)
 	if err != nil {
 		return err
@@ -331,7 +354,13 @@ func RunOnce(gobPath string, hashInput string, radius uint16) error {
 		results, distances := tree.Search(Malware{TLSH: *hash}, int(radius))
 		for i, r := range results {
 			p := r.(Malware)
-			fmt.Printf("sha256:%s %v\n", p.SHA256, distances[i])
+			p.DistanceValue = distances[i]
+			// TODO: maybe a distance threshold?
+			if o, err := p.Marshal(outFormat); err != nil {
+				return err
+			} else {
+				fmt.Printf("%s\n", o)
+			}
 		}
 	} else {
 		return err
@@ -339,7 +368,7 @@ func RunOnce(gobPath string, hashInput string, radius uint16) error {
 	return nil
 }
 
-func RunInteractive(gobPath string, radius uint16) error {
+func RunInteractive(gobPath string, radius uint16, outFormat string) error {
 	tree, err := loadGOB(gobPath)
 	if err != nil {
 		return err
@@ -354,7 +383,12 @@ func RunInteractive(gobPath string, radius uint16) error {
 			results, distances := tree.Search(Malware{TLSH: *hash}, int(radius))
 			for i, r := range results {
 				p := r.(Malware)
-				fmt.Printf("sha256:%s %v\n", p.SHA256, distances[i])
+				p.DistanceValue = distances[i]
+				if o, err := p.Marshal(outFormat); err != nil {
+					return err
+				} else {
+					fmt.Printf("%s\n", o)
+				}
 			}
 		} else {
 			return err
