@@ -24,12 +24,6 @@ var (
 		Short: "potash is awesome",
 		Long: `potash consumes the abuse.ch malware export CSV file, generates a trie based on
 		the TLSH hashes and then provides a CLI to query the trie for similar hashes`,
-		// Run: func(cmd *cobra.Command, args []string) {
-		// 	if err := potash.RunOnce(gobPath, hash, radius); err != nil {
-		// 		fmt.Println(err)
-		// 		os.Exit(1)
-		// 	}
-		// },
 	}
 
 	generateCmd = &cobra.Command{
@@ -74,13 +68,13 @@ func init() {
 	runOnceCmd.Flags().StringVarP(&gobPath, "treegob", "t", "./tree.gob", "path to the tree gob file")
 	runOnceCmd.Flags().StringVarP(&hash, "tlsh", "s", "T1A6144B2D62EA2CD4E97A817CC8868251D5B370362712B1EF02E0C57C9F17AE97A7DF41", "hash of the file")
 	// make tlsh required
-	runOnceCmd.MarkFlagRequired("tlsh")
+	_ = runOnceCmd.MarkFlagRequired("tlsh")
 	runOnceCmd.Flags().Uint16VarP(&radius, "count", "c", 10, "number of output neighbours")
 	runOnceCmd.Flags().StringVarP(&outputFormat, "format", "f", "json", "output format. options: json, table, yaml")
 
 	generateCmd.Flags().StringVarP(&csvPath, "csv", "c", "./malware.csv", "path to the abuse.ch CSV file")
 	// make csv required
-	generateCmd.MarkFlagRequired("csv")
+	_ = generateCmd.MarkFlagRequired("csv")
 	generateCmd.Flags().StringVarP(&gobPath, "treegob", "t", "./tree.gob", "path to the tree gob file")
 	generateCmd.Flags().BoolVarP(&forceGenerate, "force", "f", false, "force overwrite of the existing tree")
 
@@ -102,7 +96,7 @@ func init() {
 
 }
 
-// Execute executes the root command.
+// Execute is the only exported function of cmd for the main package. it kicks off the CLI
 func Execute() error {
 	return rootCmd.Execute()
 }

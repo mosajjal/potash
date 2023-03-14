@@ -170,7 +170,7 @@ func (m *Malware) GobDecode(data []byte) error {
 		return err
 	}
 	// parse the TLSH string into a TLSH struct
-	if hash, err := tlsh.ParseStringToTlsh(cleanHash(m.TLSHRaw)); err == nil {
+	if hash, err := tlsh.ParseStringToTlsh(CleanHash(m.TLSHRaw)); err == nil {
 		m.TLSH = *hash
 	} else {
 		return err
@@ -206,7 +206,8 @@ func (m Malware) String() string {
 	return m.TLSH.String()
 }
 
-func cleanHash(hash string) string {
+// CleanHash removes the first two characters if the string starts with T and removes the newline character
+func CleanHash(hash string) string {
 	// if the string starts with T, remove the first two characters
 	if strings.HasPrefix(hash, "T") {
 		hash = hash[2:]
@@ -278,7 +279,7 @@ func Generate(csvPath string, gobPath string, force bool) error {
 				SSDeep:        m["ssdeep"],
 				TLSHRaw:       m["tlsh"],
 			}
-			if hash, err := tlsh.ParseStringToTlsh(cleanHash(mal.TLSHRaw)); err == nil {
+			if hash, err := tlsh.ParseStringToTlsh(CleanHash(mal.TLSHRaw)); err == nil {
 				mal.TLSH = *hash
 				hashes = append(hashes, mal)
 			} else {
@@ -315,7 +316,8 @@ func Generate(csvPath string, gobPath string, force bool) error {
 	return nil
 }
 
-func loadGOB(gobPath string) (*vptree.VPTree, error) {
+// LoadGOB loads a tree from a gob file
+func LoadGOB(gobPath string) (*vptree.VPTree, error) {
 	s := spinner.New(spinner.CharSets[9], 100*time.Millisecond)
 	s.UpdateCharSet(spinner.CharSets[11])
 	gobFile, err := os.Open(gobPath)
@@ -344,12 +346,12 @@ func loadGOB(gobPath string) (*vptree.VPTree, error) {
 
 // RunOnce reads the GOB path for a trie or creates a new one
 func RunOnce(gobPath string, hashInput string, radius uint16, outFormat string) error {
-	tree, err := loadGOB(gobPath)
+	tree, err := LoadGOB(gobPath)
 	if err != nil {
 		return err
 	}
 
-	hashInput = cleanHash(hashInput)
+	hashInput = CleanHash(hashInput)
 	if hash, err := tlsh.ParseStringToTlsh(hashInput); err == nil {
 		results, distances := tree.Search(Malware{TLSH: *hash}, int(radius))
 		for i, r := range results {
@@ -369,7 +371,7 @@ func RunOnce(gobPath string, hashInput string, radius uint16, outFormat string) 
 }
 
 func RunInteractive(gobPath string, radius uint16, outFormat string) error {
-	tree, err := loadGOB(gobPath)
+	tree, err := LoadGOB(gobPath)
 	if err != nil {
 		return err
 	}
@@ -378,7 +380,7 @@ func RunInteractive(gobPath string, radius uint16, outFormat string) error {
 		fmt.Print("Enter TLSH: ")
 		hashInput, _ := reader.ReadString('\n')
 
-		hashInput = cleanHash(hashInput)
+		hashInput = CleanHash(hashInput)
 		if hash, err := tlsh.ParseStringToTlsh(hashInput); err == nil {
 			results, distances := tree.Search(Malware{TLSH: *hash}, int(radius))
 			for i, r := range results {

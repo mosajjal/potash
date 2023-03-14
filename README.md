@@ -5,7 +5,7 @@ Potash Malware Search Engine is a command-line tool that utilizes TLSH and vptre
 The tool can run in two modes: `interactive` and `once`. In the interactive mode, the tool prompts the user to enter the TLSH but doesn't exit after printing the 10 closes SHA256 hashes. In the `once` mode, the tool takes the file path or TLSH hash as a command-line argument and returns the 10 closest malware SHA256 hashes.
 
 ## Requirements
-- Go 1.19 or later
+- Go 1.20 or higher
 
 
 ## Installation
@@ -23,7 +23,7 @@ Finally, to run the tool, enter the command:
 
 ## Usage
 
-```bash
+```
 potash consumes the abuse.ch malware export CSV file, generates a trie based on
                 the TLSH hashes and then provides a CLI to query the trie for similar hashes
 
@@ -34,6 +34,7 @@ Available Commands:
   completion     Generate the autocompletion script for the specified shell
   generate       generate a new tree
   help           Help about any command
+  rest           run rest API
   runinteractive run interactive
   runonce        run once
 
@@ -57,6 +58,34 @@ Obtain the TLSH hash of the target malware by using VirusTotal (VT) or the tlsh 
 Run the command `./potash runonce -s T1THEHASH`, where `T1THEHASH` is the TLSH hash of the target malware.
 Wait for a few seconds until the tool loads up the vptree and then it will output the 10 nearest files and exit.
 If you want to search for multiple hashes, you can run `./potash runinteractive`. 
+
+### ReST API
+
+The API returns a JSON array of results, each result is a JSON object with the following fields:
+- FirstSeen: the date the malware was first seen
+- SHA256: the SHA256 hash of the malware
+- MD5: the MD5 hash of the malware
+- SHA1: the SHA1 hash of the malware
+- Reporter: the name of the reporter
+- FileName: the name of the file
+- FileTypeGuess: the guessed file type
+- MIMEType: the MIME type of the file
+- Signature: the signature of the file
+- ClamAV: the ClamAV result
+- VTPercent: the VirusTotal result
+- ImpHash: the ImpHash of the file
+- SSDeep: the SSDeep hash of the file
+- TLSHRaw: the TLSH hash of the file
+- DistanceValue: the distance between the hash and the result
+
+example usage:
+
+`curl -X GET "http://localhost:5555/?hash=T1DB52C083FA3DF4C75D587A74009B8EA3065B9E4E266D8F9C4FB974091736CE2E401A4A&radius=1"`
+
+if a basepath is set, it is prepended to the endpoint
+example usage with basepath:
+
+`curl -X GET "http://localhost:5555/basepath?hash=T1DB52C083FA3DF4C75D587A74009B8EA3065B9E4E266D8F9C4FB974091736CE2E401A4A&radius=1"`
 
 ## Contributions
 
