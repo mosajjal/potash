@@ -4,7 +4,7 @@ Potash Malware Search Engine is a command-line tool that utilizes TLSH and vptre
 
 The tool can run in two modes: `interactive` and `once`. In the interactive mode, the tool prompts the user to enter the TLSH but doesn't exit after printing the 10 closes SHA256 hashes. In the `once` mode, the tool takes the file path or TLSH hash as a command-line argument and returns the 10 closest malware SHA256 hashes.
 
-![potash](img/potash.png)
+![potash](static/potash.png)
 
 above example hashes:
 - 1: sha256: 253f5d458d58c68d652d8034d533b958226b72ba3f9e120acb2b7a8808aa052e
@@ -97,3 +97,10 @@ example usage with basepath:
 ## Contributions
 
 Contributions to this project are welcome. Please open an issue or a pull request if you have any suggestions or improvements.
+
+## References
+
+- https://github.com/trendmicro/tlsh
+- Jonathan Oliver, Chun Cheng, and Yanggui Chen, TLSH - A Locality Sensitive Hash. 4th Cybercrime and Trustworthy Computing Workshop, Sydney, November 2013
+- Jonathan Oliver, Scott Forman, and Chun Cheng, Using Randomization to Attack Similarity Digests. ATIS 2014, November, 2014, pages 199-210
+- Jonathan Oliver, Muqeet Ali, and Josiah Hagen. HAC-T and fast search for similarity in security 2020 International Conference on Omni-layer Intelligent Systems (COINS). IEEE, 2020.
