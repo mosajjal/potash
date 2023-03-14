@@ -47,7 +47,7 @@ Use "potash [command] --help" for more information about a command.
 
 To generate a new vptree file, follow these steps:
 
-Download the `abuse.ch` input as a CSV file named `download.csv` and save it in the same directory as the binary.
+Download and unzip the `abuse.ch` input from [here](https://bazaar.abuse.ch/export/csv/full/) as a CSV file named `download.csv` and save it in the same directory as the binary.
 Run the binary using the following command: `./potash generate -c download.csv`
 The vptree file will be created in the same directory as the binary (`./tree.gob` by default)
 
