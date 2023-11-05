@@ -36,7 +36,7 @@ require (
 	github.com/miekg/dns v1.1.56 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/mosajjal/dnsclient v0.1.1-0.20230206011533-99fa18d84393 // indirect
+	github.com/mosajjal/dnsclient v0.2.0 // indirect
 	github.com/olekukonko/ts v0.0.0-20171002115256-78ecb04241c0 // indirect
 	github.com/onsi/ginkgo/v2 v2.13.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
